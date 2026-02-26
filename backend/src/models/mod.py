@@ -3,11 +3,12 @@ from typing import  TYPE_CHECKING, List
 
 from sqlmodel import Relationship, SQLModel, Field
 
-from src.models import ModCategories
+from src.models import ModCategories, ModVersions
 
 if TYPE_CHECKING:
-    # from backend.src.models.version import Version
+    from backend.src.models.version import Version
     from backend.src.models.category import Category
+    from backend.src.models.version import Version
 
 
 class ModBase(SQLModel):
@@ -27,7 +28,7 @@ class ModUpdate(SQLModel):
     description: str | None = Field(default=None, min_length=20, max_length=1000)
     author: str | None = Field(default=None, min_length=3, max_length=32)
     categories: list["Category"] | None = Field(default=None)
-    # versions: list["Version"] | None = Field(default=None)
+    versions: list["Version"] | None = Field(default=None)
 
 
 class ModOut(ModBase):
@@ -46,3 +47,4 @@ class Mod(ModBase, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     rating: float = Field(default=None, ge=0.0, le=5.0)
     categories: List["Category"] = Relationship(back_populates="mods", link_model=ModCategories)
+    versions: List["Version"] = Relationship(back_populates="mods", link_model=ModVersions)

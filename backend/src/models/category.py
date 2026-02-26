@@ -12,5 +12,5 @@ if TYPE_CHECKING:
 class Category(SQLModel, table=True):
     __tablename__ = "categories"
 
-    title: str = Field(primary_key=True, min_length=3, max_length=10)
+    title: str = Field(primary_key=True, min_length=3, max_length=32)
     mods: List["Mod"] = Relationship(back_populates="categories", link_model=ModCategories)
