@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from routes import mods
+from src.routes import mods
 
 
 app = FastAPI()

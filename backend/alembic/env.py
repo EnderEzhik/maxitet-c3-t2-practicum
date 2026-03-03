@@ -9,9 +9,6 @@ from alembic import context
 from sqlmodel import SQLModel
 
 from src.models.mod import Mod
-from src.models.category import Category
-from src.models.version import Version
-from src.models import ModCategories
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
