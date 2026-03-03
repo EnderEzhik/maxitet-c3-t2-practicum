@@ -1,0 +1,225 @@
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #0d1b2a;
+    color: #e0e1dd;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Цвета Bootstrap-кнопок под палитру */
+.btn-primary {
+    background-color: #778da9;
+    border-color: #778da9;
+    color: #0d1b2a;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #415a77;
+    border-color: #415a77;
+    color: #e0e1dd;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border-color: #778da9;
+    color: #e0e1dd;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background-color: #415a77;
+    border-color: #415a77;
+    color: #e0e1dd;
+}
+
+.btn-small {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* Header navbar */
+.header {
+    padding: 0.75rem 2rem;
+    background-color: #1b263b;
+    border-bottom: 1px solid #415a77;
+}
+
+.header img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+}
+
+.header-actions .btn + .btn {
+    margin-left: 0.5rem;
+}
+
+/* Основной лейаут */
+.layout {
+    max-width: 1200px;
+    margin: 1.5rem auto;
+    padding: 0 1rem 2rem;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.sidebar {
+    flex: 0 0 280px;
+    background-color: #1b263b;
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.45);
+}
+
+.sidebar-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #e0e1dd;
+}
+
+.filter-group {
+    margin-bottom: 1.25rem;
+}
+
+.filter-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.9rem;
+    color: #e0e1dd;
+}
+
+.filter-input,
+.filter-select {
+    background-color: #0d1b2a;
+    border-color: #415a77;
+    color: #e0e1dd;
+}
+
+.filter-input::placeholder {
+    color: #778da9;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    border-color: #778da9;
+    box-shadow: 0 0 0 0.15rem rgba(119, 141, 169, 0.35);
+}
+
+.filter-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0;
+    margin: 0;
+}
+
+.form-check-input {
+    margin: 0;
+    cursor: pointer;
+    background-color: #0d1b2a;
+    border-color: #415a77;
+}
+
+.form-check-input:checked {
+    background-color: #778da9;
+    border-color: #778da9;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.content {
+    flex: 1 1 auto;
+    background-color: #1b263b;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+}
+
+.content-title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #e0e1dd;
+}
+
+.content-subtitle {
+    font-size: 0.9rem;
+    color: #778da9;
+}
+
+.cards {
+    margin-top: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+/* Временный стиль для карточек модов, если нет своих классов */
+.cards > * {
+    background-color: #0d1b2a;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    border: 1px solid #415a77;
+}
+
+.pagination {
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: auto;
+}
+
+.page-btn {
+    border-radius: 999px;
+}
+
+.page-info {
+    font-size: 0.85rem;
+    color: #778da9;
+    text-align: center;
+}
+
+/* Номера страниц (если будут ссылками/кнопками) */
+#pageNumbers > * {
+    min-width: 2rem;
+    text-align: center;
+}
+
+/* Адаптивность */
+@media (max-width: 992px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        padding-inline: 1rem;
+    }
+
+    .content {
+        padding: 1.25rem 1rem;
+    }
+}

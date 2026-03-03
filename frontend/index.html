@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasyMods</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <header class="header">
-        <span><img src="" alt="Logo.пнг"></span>
-        <div class="header-actions">
-            <a class="btn" href="">Войти</a>
-            <a href="">Зарегистрироваться</a>
+    <header class="header d-flex align-items-center justify-content-between">
+        <span><!-- <img src="" alt="Logo.пнг"> --></span>
+        <div class="header-actions d-flex gap-2">
+            <a class="btn btn-secondary" href="/login">Войти</a>
+            <a class="btn btn-primary" href="/registration">Зарегистрироваться</a>
         </div>
     </header>
 
@@ -21,12 +22,12 @@
 
             <div class="filter-group">
                 <label for="searchInput" class="filter-label">Поиск по названию</label>
-                <input type="text" id="searchInput" class="filter-input" placeholder="Например, minimap">
+                <input type="text" id="searchInput" class="filter-input form-control form-control-sm" placeholder="Например, minimap">
             </div>
 
             <div class="filter-group">
                 <label for="versionSelect" class="filter-label">Версия:</label>
-                <select id="versionSelect" class="filter-select">
+                <select id="versionSelect" class="filter-select form-select form-select-sm">
                     <option value="">Любая</option>
                     <option value="1.21.1">1.21.1</option>
                     <option value="1.20.1">1.20.1</option>
@@ -38,20 +39,20 @@
             <div class="filter-group">
                 <span for="" class="filter-label">Категории:</span>
                 <div class="filter-checkboxes">
-                    <label>
-                        <input type="checkbox" name="category" value="Технические">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" name="category" value="Технические">
                         Технические
                     </label>
-                    <label>
-                        <input type="checkbox" name="category" value="Мир">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" name="category" value="Мир">
                         Мир
                     </label>
-                    <label>
-                        <input type="checkbox" name="category" value="Интерфейс">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" name="category" value="Интерфейс">
                         Интерфейс
                     </label>
-                    <label>
-                        <input type="checkbox" name="category" value="Геймплей">
+                    <label class="form-check">
+                        <input type="checkbox" class="form-check-input" name="category" value="Геймплей">
                         Геймплей
                     </label>
                 </div>
@@ -59,27 +60,28 @@
 
             <div class="filter-buttons">
                 <a id="applyFilters" class="btn btn-small btn-primary" href="">Применить</a>
-                <a id="resetFilters" class="btn btn-small" href="">Сбросить</a>
+                <a id="resetFilters" class="btn btn-small btn-secondary" href="">Сбросить</a>
             </div>
         </aside>
 
         <section class="content">
-            <div class="content-header">
+            <div class="content-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
                 <div>
                     <h1 class="content-title">Каталог модов</h1>
                 </div>
-                <div id="totalCount" class="content-subtitle"></div>
+                <div id="totalCount" class="content-subtitle text-md-end"></div>
             </div>
 
             <div id="cardsContainer" class="cards"></div>
 
             <div class="pagination">
-                <button id="prevPage" class="page-btn" type="button">&laquo;</button>
-                <div id="pageNumbers"></div>
-                <button id="nextPage" class="page-btn" type="button">&raquo;</button>
+                <button id="prevPage" class="page-btn btn btn-outline-secondary btn-sm" type="button">&laquo;</button>
+                <div id="pageNumbers" class="d-flex gap-1">0</div>
+                <button id="nextPage" class="page-btn btn btn-outline-secondary btn-sm" type="button">&raquo;</button>
                 <span id="pageInfo" class="page-info"></span>
             </div>
         </section>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
