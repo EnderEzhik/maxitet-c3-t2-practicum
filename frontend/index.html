@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyMods</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <span><img src="" alt="Logo.пнг"></span>
+        <div class="header-actions">
+            <a class="btn" href="">Войти</a>
+            <a href="">Зарегистрироваться</a>
+        </div>
+    </header>
+
+    <main class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-title">Фильтры</div>
+
+            <div class="filter-group">
+                <label for="searchInput" class="filter-label">Поиск по названию</label>
+                <input type="text" id="searchInput" class="filter-input" placeholder="Например, minimap">
+            </div>
+
+            <div class="filter-group">
+                <label for="versionSelect" class="filter-label">Версия:</label>
+                <select id="versionSelect" class="filter-select">
+                    <option value="">Любая</option>
+                    <option value="1.21.1">1.21.1</option>
+                    <option value="1.20.1">1.20.1</option>
+                    <option value="1.16.5">1.16.5</option>
+                    <option value="1.12.2">1.12.2</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <span for="" class="filter-label">Категории:</span>
+                <div class="filter-checkboxes">
+                    <label>
+                        <input type="checkbox" name="category" value="Технические">
+                        Технические
+                    </label>
+                    <label>
+                        <input type="checkbox" name="category" value="Мир">
+                        Мир
+                    </label>
+                    <label>
+                        <input type="checkbox" name="category" value="Интерфейс">
+                        Интерфейс
+                    </label>
+                    <label>
+                        <input type="checkbox" name="category" value="Геймплей">
+                        Геймплей
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-buttons">
+                <a id="applyFilters" class="btn btn-small btn-primary" href="">Применить</a>
+                <a id="resetFilters" class="btn btn-small" href="">Сбросить</a>
+            </div>
+        </aside>
+
+        <section class="content">
+            <div class="content-header">
+                <div>
+                    <h1 class="content-title">Каталог модов</h1>
+                </div>
+                <div id="totalCount" class="content-subtitle"></div>
+            </div>
+
+            <div id="cardsContainer" class="cards"></div>
+
+            <div class="pagination">
+                <button id="prevPage" class="page-btn" type="button">&laquo;</button>
+                <div id="pageNumbers"></div>
+                <button id="nextPage" class="page-btn" type="button">&raquo;</button>
+                <span id="pageInfo" class="page-info"></span>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
