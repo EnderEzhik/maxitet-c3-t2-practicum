@@ -3,10 +3,20 @@ from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 
-from sqlmodel import select
+from sqlmodel import select, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.models.mod import Mod, ModCreate, ModUpdate
+
+
+def _apply_filters(stmt,
+                   title: str | None):
+    if title:
+        title = title.strip()
+        if title:
+            title = f"%{title}%"
+            stmt = stmt.where(Mod.title.ilike(title))
+    return stmt
 
 
 async def create_mod(session: AsyncSession, mod_data: ModCreate) -> Mod:
@@ -26,10 +36,30 @@ async def get_all_mods(session: AsyncSession) -> list[Mod]:
     return mods
 
 
-async def get_mod_by_id(session: AsyncSession, mod_id: UUID) -> Mod:
-    mod = await session.get(Mod, mod_id)
-    if mod is None:
-        raise HTTPException(status_code=404, detail="Mod not found")
+async def get_mods_with_filters(
+    session: AsyncSession,
+    title: str | None = None,
+    limit: int = 20,
+    offset: int = 0
+) -> tuple[list[Mod], int]:
+    stmt = select(Mod)
+    stmt = _apply_filters(stmt, title)
+    stmt = stmt.offset(offset).limit(limit)
+
+    result = await session.exec(stmt)
+    mods = result.all()
+
+    count_stmt = select(func.count()).select_from(Mod)
+    count_stmt = _apply_filters(count_stmt, title)
+
+    count_result = await session.exec(count_stmt)
+    count = count_result.one()
+
+    return mods, count
+
+
+async def get_mod_by_id(session: AsyncSession, mod_id: UUID) -> Mod | None:
+    mod = (await session.exec(select(Mod).where(Mod.id == mod_id))).first()
     return mod
 
 
