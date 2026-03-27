@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from src.routes import mods
 
 
-app = FastAPI()
+app = FastAPI(title="EasyMods")
 
 app.include_router(mods.router)
 

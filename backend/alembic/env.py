@@ -8,6 +8,8 @@ from alembic import context
 
 from sqlmodel import SQLModel
 
+from src.models.version import Version
+from src.models.category import Category
 from src.models.mod import Mod
 
 # this is the Alembic Config object, which provides
