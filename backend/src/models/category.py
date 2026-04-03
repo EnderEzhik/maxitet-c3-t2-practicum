@@ -7,11 +7,15 @@ class CategoryBase(SQLModel):
     category: str = Field(primary_key=True)
 
 
+class CategoryCreate(CategoryBase):
+    pass
+
+
 class CategoryOut(CategoryBase):
     pass
 
 
-class CategorysOut(SQLModel):
+class CategoriesOut(SQLModel):
     data: List[CategoryOut]
     count: int
 

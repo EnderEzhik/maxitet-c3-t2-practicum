@@ -7,6 +7,10 @@ class VersionBase(SQLModel):
     version: str = Field(primary_key=True)
 
 
+class VersionCreate(VersionBase):
+    pass
+
+
 class VersionOut(VersionBase):
     pass
 
