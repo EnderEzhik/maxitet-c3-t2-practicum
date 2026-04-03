@@ -38,3 +38,12 @@ async def get_mods_list(session: AsyncSession) -> tuple[list[Mod], int]:
 
 async def get_mod_by_id(session: AsyncSession, mod_id: int) -> Mod | None:
     return await session.get(Mod, mod_id)
+
+
+async def delete_mod_by_id(session: AsyncSession, mod_id: int) -> bool:
+    mod = await get_mod_by_id(session, mod_id)
+    if mod is None:
+        return False
+    await session.delete(mod)
+    await session.commit()
+    return True

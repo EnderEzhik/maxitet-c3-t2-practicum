@@ -25,3 +25,11 @@ async def get_mod_by_id(session: SessionDep, mod_id: int):
     if mod is None:
         raise HTTPException(status_code=404, detail="Mod not found")
     return mod
+
+
+@router.delete("/{mod_id}")
+async def delete_mod_by_id(session: SessionDep, mod_id: int):
+    ok = await mods_repo.delete_mod_by_id(session, mod_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Mod not found")
+    return { "status": "deleted" }

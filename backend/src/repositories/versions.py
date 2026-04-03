@@ -24,3 +24,12 @@ async def get_versions_list(session: AsyncSession) -> tuple[list[Version], int]:
 
 async def get_version(session: AsyncSession, version: str) -> Version | None:
     return await session.get(Version, version)
+
+
+async def delete_version(session: AsyncSession, version: str) -> bool:
+    version = await get_version(session, version)
+    if version is None:
+        return False
+    await session.delete(version)
+    await session.commit()
+    return True

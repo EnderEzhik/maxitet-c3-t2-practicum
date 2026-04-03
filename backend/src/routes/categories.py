@@ -25,3 +25,11 @@ async def get_category(session: SessionDep, category: str):
     if category is None:
         raise HTTPException(status_code=404, detail="Category not found")
     return category
+
+
+@router.delete("/{category}")
+async def delete_category(session: SessionDep, category: str):
+    ok = await categories_repo.delete_category(session, category)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return { "status": "deleted" }

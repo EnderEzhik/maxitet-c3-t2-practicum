@@ -24,3 +24,12 @@ async def get_categories_list(session: AsyncSession) -> tuple[list[Category], in
 
 async def get_category(session: AsyncSession, category: str) -> Category | None:
     return await session.get(Category, category)
+
+
+async def delete_category(session: AsyncSession, category: str) -> bool:
+    category = await get_category(session, category)
+    if category is None:
+        return False
+    await session.delete(category)
+    await session.commit()
+    return True

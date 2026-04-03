@@ -25,3 +25,11 @@ async def get_version(session: SessionDep, version: str):
     if version is None:
         raise HTTPException(status_code=404, detail="Version not found")
     return version
+
+
+@router.delete("/{version}")
+async def delete_version(session: SessionDep, version: str):
+    ok = await versions_repo.delete_version(session, version)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Version not found")
+    return { "status": "deleted" }
