@@ -1,8 +1,8 @@
-"""init2
+"""init
 
-Revision ID: b30794589aff
+Revision ID: c56a091a6687
 Revises: 
-Create Date: 2026-03-27 18:21:35.580808
+Create Date: 2026-04-03 15:33:51.651853
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b30794589aff'
+revision: str = 'c56a091a6687'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -33,12 +33,13 @@ def upgrade() -> None:
     op.create_table('mods',
     sa.Column('title', sqlmodel.sql.sqltypes.AutoString(length=32), nullable=False),
     sa.Column('description', sqlmodel.sql.sqltypes.AutoString(length=1000), nullable=False),
-    sa.Column('category', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('version', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('category', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['category'], ['categories.category'], ),
     sa.ForeignKeyConstraint(['version'], ['versions.version'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('title')
     )
     # ### end Alembic commands ###
 
