@@ -4,10 +4,14 @@ from sqlmodel import SQLModel, Field
 
 
 class ModBase(SQLModel):
-    title: str = Field(nullable=False, min_length=3, max_length=32)
+    title: str = Field(nullable=False, unique=True, min_length=3, max_length=32)
     description: str = Field(nullable=False, min_length=10, max_length=1000)
     version: str = Field(nullable=False, foreign_key="versions.version")
     category: str = Field(nullable=False, foreign_key="categories.category")
+
+
+class ModCreate(ModBase):
+    pass
 
 
 class ModOut(ModBase):
