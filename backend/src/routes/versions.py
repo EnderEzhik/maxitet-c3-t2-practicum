@@ -1,7 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from src.core.database import SessionDep
-from src.models.version import VersionCreate, VersionsOut
+from src.models.version import VersionCreate, VersionOut, VersionsOut
 import src.repositories.versions as versions_repo
 
 
@@ -17,3 +17,11 @@ async def create_version(session: SessionDep, version_data: VersionCreate):
 async def get_versions_list(session: SessionDep):
     versions, count = await versions_repo.get_versions_list(session)
     return VersionsOut(data=versions, count=count)
+
+
+@router.get("/{version}", response_model=VersionOut)
+async def get_version(session: SessionDep, version: str):
+    version = await versions_repo.get_version(session, version)
+    if version is None:
+        raise HTTPException(status_code=404, detail="Version not found")
+    return version

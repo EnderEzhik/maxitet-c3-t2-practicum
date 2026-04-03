@@ -34,3 +34,7 @@ async def get_mods_list(session: AsyncSession) -> tuple[list[Mod], int]:
     count = count_result.one()
 
     return mods, count
+
+
+async def get_mod_by_id(session: AsyncSession, mod_id: int) -> Mod | None:
+    return await session.get(Mod, mod_id)
