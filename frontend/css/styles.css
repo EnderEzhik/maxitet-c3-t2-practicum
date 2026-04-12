@@ -113,6 +113,21 @@ body {
     flex-direction: column;
     gap: 0.25rem;
     font-size: 0.9rem;
+    max-height: 12rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.25rem;
+    scrollbar-color: #415a77 #0d1b2a;
+    scrollbar-width: thin;
+}
+
+.filter-checkboxes::-webkit-scrollbar {
+    width: 6px;
+}
+
+.filter-checkboxes::-webkit-scrollbar-thumb {
+    background: #415a77;
+    border-radius: 999px;
 }
 
 .form-check {
@@ -123,14 +138,16 @@ body {
     margin: 0;
 }
 
-.form-check-input {
+.filter-checkboxes .form-check-input {
+    float: none;
     margin: 0;
+    flex-shrink: 0;
     cursor: pointer;
     background-color: #0d1b2a;
     border-color: #415a77;
 }
 
-.form-check-input:checked {
+.filter-checkboxes .form-check-input:checked {
     background-color: #778da9;
     border-color: #778da9;
 }

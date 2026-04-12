@@ -1,4 +1,8 @@
+const API_BASE = "http://localhost:8000";
+
 const modCardsContainer = document.getElementById("cardsContainer");
+const versionSelect = document.getElementById("versionSelect");
+const categoryCheckboxesContainer = document.querySelector(".filter-checkboxes");
 
 function escapeHtml(text) {
     const div = document.createElement("div");
@@ -34,7 +38,7 @@ function createModCard(title, description, versions, categories) {
 
 async function fetchMods() {
     try {
-        const response = await fetch("http://localhost:8000/mods", {
+        const response = await fetch(`${API_BASE}/mods`, {
             method: "GET"
         });
 
@@ -57,6 +61,67 @@ async function fetchMods() {
     }
 }
 
+async function fetchVersions() {
+    try {
+        const response = await fetch(`${API_BASE}/versions`, { method: "GET" });
+
+        if (!response.ok) {
+            console.error(response.status);
+            console.error(await response.json());
+            alert("Ошибка загрузки версий");
+            return;
+        }
+
+        const data = await response.json();
+        const versions = data.data;
+
+        for (const v of versions) {
+            const opt = document.createElement("option");
+            opt.value = v.version;
+            opt.textContent = v.version;
+            versionSelect.appendChild(opt);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function fetchCategories() {
+    try {
+        const response = await fetch(`${API_BASE}/categories`, { method: "GET" });
+
+        if (!response.ok) {
+            console.error(response.status);
+            console.error(await response.json());
+            alert("Ошибка загрузки категорий");
+            return;
+        }
+
+        const data = await response.json();
+        const categories = data.data;
+
+        categoryCheckboxesContainer.replaceChildren();
+
+        for (const c of categories) {
+            const label = document.createElement("label");
+            label.className = "form-check";
+
+            const input = document.createElement("input");
+            input.type = "checkbox";
+            input.className = "form-check-input";
+            input.name = "category";
+            input.value = c.category;
+
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(c.category));
+
+            categoryCheckboxesContainer.appendChild(label);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
-    await fetchMods();
+    await Promise.all([fetchMods(), fetchVersions(), fetchCategories()]);
 });
