@@ -1,18 +1,32 @@
-from typing import List
+from typing import List, Optional, TYPE_CHECKING
 
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 
+from src.models.links import ModCategoryLink
 
-class CategoryBase(SQLModel):
-    category: str = Field(primary_key=True)
-
-
-class CategoryCreate(CategoryBase):
-    pass
+if TYPE_CHECKING:
+    from src.models.mod import Mod
 
 
-class CategoryOut(CategoryBase):
-    pass
+class Category(SQLModel, table=True):
+    __tablename__ = "categories"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    category: str = Field(nullable=False, unique=True, index=True)
+
+    mods: List["Mod"] = Relationship(
+        link_model=ModCategoryLink,
+        sa_relationship_kwargs={"lazy": "selectin"}
+    )
+
+
+class CategoryCreate(SQLModel):
+    category: str
+
+
+class CategoryOut(SQLModel):
+    id: int
+    category: str
 
 
 class CategoriesOut(SQLModel):
@@ -20,5 +34,4 @@ class CategoriesOut(SQLModel):
     count: int
 
 
-class Category(CategoryBase, table=True):
-    __tablename__ = "categories"
+CategoryOut.model_rebuild()

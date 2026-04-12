@@ -1,21 +1,42 @@
-from typing import List
+from typing import List, Optional
 
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 
-
-class ModBase(SQLModel):
-    title: str = Field(nullable=False, unique=True, min_length=3, max_length=32)
-    description: str = Field(nullable=False, min_length=10, max_length=1000)
-    version: str = Field(nullable=False, foreign_key="versions.version")
-    category: str = Field(nullable=False, foreign_key="categories.category")
+from src.models.version import Version, VersionOut
+from src.models.category import Category, CategoryOut
+from src.models.links import ModVersionLink, ModCategoryLink
 
 
-class ModCreate(ModBase):
-    pass
+class Mod(SQLModel, table=True):
+    __tablename__ = "mods"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(nullable=False, unique=True, min_length=1, max_length=255)
+    description: str = Field(nullable=False, min_length=1, max_length=2000)
+
+    versions: List["Version"] = Relationship(
+        link_model=ModVersionLink,
+        sa_relationship_kwargs={"lazy": "selectin"}
+    )
+    categories: List["Category"] = Relationship(
+        link_model=ModCategoryLink,
+        sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
 
-class ModOut(ModBase):
+class ModCreate(SQLModel):
+    name: str = Field( min_length=1, max_length=255)
+    description: str = Field(min_length=1, max_length=2000)
+    version_ids: List[int] = Field(min_length=1)
+    category_ids: List[int] = Field(min_length=1)
+
+
+class ModOut(SQLModel):
     id: int
+    name: str
+    description: str
+    versions: List[VersionOut]
+    categories: List[CategoryOut]
 
 
 class ModsOut(SQLModel):
@@ -23,7 +44,4 @@ class ModsOut(SQLModel):
     count: int
 
 
-class Mod(ModBase, table=True):
-    __tablename__ = "mods"
-
-    id: int | None = Field(default=None, primary_key=True)
+ModOut.model_rebuild()

@@ -1,18 +1,32 @@
-from typing import List
+from typing import List, Optional, TYPE_CHECKING
 
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 
+from src.models.links import ModVersionLink
 
-class VersionBase(SQLModel):
-    version: str = Field(primary_key=True)
-
-
-class VersionCreate(VersionBase):
-    pass
+if TYPE_CHECKING:
+    from src.models.mod import Mod
 
 
-class VersionOut(VersionBase):
-    pass
+class Version(SQLModel, table=True):
+    __tablename__ = "versions"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    version: str = Field(nullable=False, unique=True, index=True)
+
+    mods: List["Mod"] = Relationship(
+        link_model=ModVersionLink,
+        sa_relationship_kwargs={"lazy": "selectin"}
+    )
+
+
+class VersionCreate(SQLModel):
+    version: str
+
+
+class VersionOut(SQLModel):
+    id: int
+    version: str
 
 
 class VersionsOut(SQLModel):
@@ -20,5 +34,4 @@ class VersionsOut(SQLModel):
     count: int
 
 
-class Version(VersionBase, table=True):
-    __tablename__ = "versions"
+VersionOut.model_rebuild()
