@@ -8,40 +8,42 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <header class="header d-flex align-items-center justify-content-between">
-        <span><!-- <img src="" alt="Logo.пнг"> --></span>
+    <!-- <header class="header d-flex align-items-center justify-content-between">
+        <span><img src="" alt="Logo.пнг"></span>
         <div class="header-actions d-flex gap-2">
             <a class="btn btn-secondary" href="#">Войти</a>
             <a class="btn btn-primary" href="#">Зарегистрироваться</a>
         </div>
-    </header>
+    </header> -->
 
     <main class="layout">
         <aside class="sidebar">
             <div class="sidebar-title">Фильтры</div>
 
-            <div class="filter-group">
-                <label for="searchInput" class="filter-label">Поиск по названию</label>
-                <input type="text" id="searchInput" class="filter-input form-control form-control-sm" placeholder="Например, minimap">
-            </div>
-
-            <div class="filter-group">
-                <label for="versionSelect" class="filter-label">Версия:</label>
-                <select id="versionSelect" class="filter-select form-select form-select-sm">
-                    <option value="">Любая</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <span class="filter-label">Категории:</span>
-                <div class="filter-checkboxes">
+            <form id="filtersForm" class="filters-form">
+                <div class="filter-group">
+                    <label for="searchInput" class="filter-label">Поиск по названию</label>
+                    <input type="text" id="searchInput" name="title" class="filter-input form-control form-control-sm" placeholder="Например, minimap">
                 </div>
-            </div>
 
-            <div class="filter-buttons">
-                <a id="applyFilters" class="btn btn-small btn-primary" href="">Применить</a>
-                <a id="resetFilters" class="btn btn-small btn-secondary" href="">Сбросить</a>
-            </div>
+                <div class="filter-group">
+                    <label for="versionSelect" class="filter-label">Версия:</label>
+                    <select id="versionSelect" name="version_id" class="filter-select form-select form-select-sm">
+                        <option value="">Любая</option>
+                    </select>
+                </div>
+
+                <fieldset class="filter-group">
+                    <legend class="filter-label">Категории:</legend>
+                    <div class="filter-checkboxes">
+                    </div>
+                </fieldset>
+
+                <div class="filter-buttons">
+                    <button id="applyFilters" class="btn btn-small btn-primary" type="submit">Применить</button>
+                    <button id="resetFilters" class="btn btn-small btn-secondary" type="reset">Сбросить</button>
+                </div>
+            </form>
         </aside>
 
         <section class="content">
