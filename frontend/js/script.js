@@ -9,6 +9,11 @@ const prevPageButton = document.getElementById("prevPage");
 const nextPageButton = document.getElementById("nextPage");
 const pageNumbersContainer = document.getElementById("pageNumbers");
 const pageInfo = document.getElementById("pageInfo");
+const modDetailsModalElement = document.getElementById("modDetailsModal");
+const modDetailsTitle = document.getElementById("modDetailsTitle");
+const modDetailsDescription = document.getElementById("modDetailsDescription");
+const modDetailsDownloads = document.getElementById("modDetailsDownloads");
+const modDetailsModal = window.bootstrap ? new window.bootstrap.Modal(modDetailsModalElement) : null;
 
 const MODS_PER_PAGE = 9;
 let allMods = [];
@@ -20,12 +25,70 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+/** @param {string} value */
+function tokenizeVersion(value) {
+    const tokens = String(value).match(/\d+|[a-zA-Z]+/g);
+    return tokens ?? [];
+}
+
+/**
+ * Сравнение версий Minecraft: от новой к старой.
+ * @param {string} left
+ * @param {string} right
+ * @returns {number}
+ */
+function compareMinecraftVersionsDesc(left, right) {
+    const leftTokens = tokenizeVersion(left);
+    const rightTokens = tokenizeVersion(right);
+    const maxLength = Math.max(leftTokens.length, rightTokens.length);
+
+    for (let index = 0; index < maxLength; index += 1) {
+        const leftToken = leftTokens[index];
+        const rightToken = rightTokens[index];
+
+        if (leftToken === undefined) {
+            return 1;
+        }
+        if (rightToken === undefined) {
+            return -1;
+        }
+
+        const leftNumber = Number(leftToken);
+        const rightNumber = Number(rightToken);
+        const leftIsNumber = Number.isInteger(leftNumber);
+        const rightIsNumber = Number.isInteger(rightNumber);
+
+        if (leftIsNumber && rightIsNumber && leftNumber !== rightNumber) {
+            return rightNumber - leftNumber;
+        }
+
+        if (leftIsNumber !== rightIsNumber) {
+            return leftIsNumber ? -1 : 1;
+        }
+
+        if (leftToken !== rightToken) {
+            return rightToken.localeCompare(leftToken, "ru");
+        }
+    }
+
+    return 0;
+}
+
+/** @param {Array<{id: number, version: string}>} versions */
+function sortVersionsDesc(versions) {
+    return [...versions].sort((left, right) => compareMinecraftVersionsDesc(left.version, right.version));
+}
+
 /** @param {string} title @param {string} description @param {string[]|string} versions @param {string[]|string} categories */
 function createModCard(title, description, versions, categories) {
     const article = document.createElement("article");
     article.className = "mod-card";
+    article.tabIndex = 0;
+    article.role = "button";
 
-    const vList = Array.isArray(versions) ? versions : String(versions).split(/[\s,;]+/).filter(Boolean);
+    const vList = Array.isArray(versions)
+        ? sortVersionsDesc(versions)
+        : String(versions).split(/[\s,;]+/).filter(Boolean);
     const cList = Array.isArray(categories) ? categories : String(categories).split(/[\s,;]+/).filter(Boolean);
 
     const versionChips = vList.map((v) => `<span class="mod-chip" role="listitem">${escapeHtml(v.version)}</span>`).join("");
@@ -44,6 +107,37 @@ function createModCard(title, description, versions, categories) {
         </div>
     `;
     return article;
+}
+
+/** @param {{ id: number, name: string, description: string, versions: Array<{id: number, version: string}> }} mod */
+function openModDetails(mod) {
+    if (!modDetailsModal) {
+        return;
+    }
+
+    modDetailsTitle.textContent = mod.name;
+    modDetailsDescription.textContent = mod.description;
+    modDetailsDownloads.replaceChildren();
+
+    const versions = Array.isArray(mod.versions) ? sortVersionsDesc(mod.versions) : [];
+    if (versions.length === 0) {
+        const emptyState = document.createElement("p");
+        emptyState.className = "mod-details-empty";
+        emptyState.textContent = "Для этого мода пока нет доступных версий для скачивания.";
+        modDetailsDownloads.appendChild(emptyState);
+        modDetailsModal.show();
+        return;
+    }
+
+    for (const version of versions) {
+        const link = document.createElement("a");
+        link.className = "mod-download-link";
+        link.href = `${API_BASE}/mods/${mod.id}/download?version_id=${version.id}`;
+        link.textContent = `Скачать для Minecraft ${version.version}`;
+        modDetailsDownloads.appendChild(link);
+    }
+
+    modDetailsModal.show();
 }
 
 /**
@@ -114,6 +208,9 @@ function renderCurrentPageMods() {
     modCardsContainer.replaceChildren();
     for (const mod of pageMods) {
         const modCard = createModCard(mod.name, mod.description, mod.versions, mod.categories);
+        modCard.addEventListener("click", () => {
+            openModDetails(mod);
+        });
         modCardsContainer.appendChild(modCard);
     }
 }
@@ -168,7 +265,7 @@ async function fetchVersions() {
         }
 
         const data = await response.json();
-        const versions = data.data;
+        const versions = sortVersionsDesc(data.data);
 
         for (const v of versions) {
             const opt = document.createElement("option");

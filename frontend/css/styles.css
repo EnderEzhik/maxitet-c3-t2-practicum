@@ -181,6 +181,7 @@ body {
 
 .cards {
     margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1rem;
@@ -196,6 +197,15 @@ body {
     gap: 0.65rem;
     min-height: 0;
     max-height: 22rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.mod-card:hover,
+.mod-card:focus-visible {
+    border-color: #778da9;
+    transform: translateY(-2px);
+    outline: none;
 }
 
 .mod-card__title {
@@ -204,6 +214,7 @@ body {
     font-weight: 600;
     color: #e0e1dd;
     line-height: 1.25;
+    text-align: center;
 }
 
 .mod-card__desc {
@@ -212,6 +223,7 @@ body {
     line-height: 1.4;
     color: #c5c6c9;
     display: -webkit-box;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     overflow: hidden;
@@ -230,6 +242,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: #778da9;
+    text-align: center;
 }
 
 /* Чипы с переносом; при большом числе элементов — вертикальная прокрутка, карточка остаётся низкой */
@@ -291,6 +304,72 @@ body {
 #pageNumbers > * {
     min-width: 2rem;
     text-align: center;
+}
+
+.mod-details-dialog {
+    max-width: min(80vw, 1100px);
+}
+
+.mod-details-content {
+    background-color: #1b263b;
+    color: #e0e1dd;
+    border: 1px solid #415a77;
+    border-radius: 0.9rem;
+}
+
+.mod-details-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-right: 1rem;
+}
+
+.mod-details-section {
+    margin-top: 1rem;
+}
+
+.mod-details-section-title {
+    font-size: 1rem;
+    color: #778da9;
+    margin-bottom: 0.5rem;
+}
+
+.mod-details-description {
+    margin: 0;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.mod-download-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-height: 14rem;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+.mod-download-link {
+    display: inline-block;
+    width: fit-content;
+    padding: 0.4rem 0.65rem;
+    border-radius: 0.5rem;
+    background-color: #0d1b2a;
+    border: 1px solid #415a77;
+    color: #e0e1dd;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.mod-download-link:hover,
+.mod-download-link:focus-visible {
+    border-color: #778da9;
+    color: #e0e1dd;
+}
+
+.mod-details-empty {
+    margin: 0;
+    color: #c5c6c9;
+    font-size: 0.9rem;
 }
 
 /* Адаптивность */

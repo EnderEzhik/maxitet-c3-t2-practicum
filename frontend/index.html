@@ -65,6 +65,27 @@
             </div>
         </section>
     </main>
+
+    <div class="modal fade" id="modDetailsModal" tabindex="-1" aria-labelledby="modDetailsTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl mod-details-dialog">
+            <div class="modal-content mod-details-content">
+                <div class="modal-header border-0 pb-0">
+                    <h2 id="modDetailsTitle" class="modal-title mod-details-title"></h2>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <section class="mod-details-section">
+                        <h3 class="mod-details-section-title">Описание</h3>
+                        <p id="modDetailsDescription" class="mod-details-description"></p>
+                    </section>
+                    <section class="mod-details-section">
+                        <h3 class="mod-details-section-title">Скачать по версиям</h3>
+                        <div id="modDetailsDownloads" class="mod-download-links"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script type="module" src="js/script.js"></script>
 </body>
