@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.routes import mods, versions, categories
+from src.routes import mods, versions, categories, auth, users
 
 
 app = FastAPI(title="EasyMods")
@@ -22,6 +22,8 @@ app.add_middleware(
 app.include_router(mods.router)
 app.include_router(versions.router)
 app.include_router(categories.router)
+app.include_router(auth.router)
+app.include_router(users.router)
 
 
 @app.get("/")

@@ -6,10 +6,10 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from src.core.settings import settings
 
-ASYNC_DATABASE_URL = "postgresql+asyncpg://postgres:1234@localhost:5432/EasyMods"
 
-engine = create_async_engine(ASYNC_DATABASE_URL, echo=True)
+engine = create_async_engine(settings.database_url_async, echo=settings.DB_ECHO)
 
 AsyncSessionMaker = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
