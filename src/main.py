@@ -18,5 +18,4 @@ app.include_router(users.router)
 
 @app.get("/")
 async def index():
-    # return { "message": "api is work" }
     return FileResponse("static/index.html")
