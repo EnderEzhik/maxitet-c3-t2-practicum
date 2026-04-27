@@ -1,23 +1,13 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from src.routes import mods, versions, categories, auth, users
 
 
 app = FastAPI(title="EasyMods")
 
-origins = [
-    # "http://127.0.0.1:5500"
-    "*"
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(mods.router)
 app.include_router(versions.router)
@@ -28,4 +18,5 @@ app.include_router(users.router)
 
 @app.get("/")
 async def index():
-    return { "message": "api is work" }
+    # return { "message": "api is work" }
+    return FileResponse("static/index.html")

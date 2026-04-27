@@ -8,3 +8,4 @@ pydantic_settings
 pyjwt
 pwdlib[argon2]
 python-multipart
+aiofiles

@@ -25,10 +25,10 @@ class Mod(SQLModel, table=True):
 
 
 class ModCreate(SQLModel):
-    name: str = Field( min_length=1, max_length=255)
+    name: str = Field(min_length=1, max_length=255)
     description: str = Field(min_length=1, max_length=2000)
-    version_ids: List[int] = Field(min_length=1)
-    category_ids: List[int] = Field(min_length=1)
+    version_id: int = Field(...)
+    category_id: int = Field(...)
 
 
 class ModOut(SQLModel):

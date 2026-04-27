@@ -1,18 +1,44 @@
+import aiofiles
+
+from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Form, HTTPException, Query, File, UploadFile
+from fastapi.responses import FileResponse
 
 from src.core.database import SessionDep
 from src.models.mod import ModCreate, ModOut, ModsOut
 import src.repositories.mods as mods_repo
 
 
+mod_files_dir = Path(__file__).resolve().parents[1] / "mod_files"
+
 router = APIRouter(prefix="/mods", tags=["Mods"])
 
 
 @router.post("/", response_model=ModOut)
-async def create_mod(session: SessionDep, mod_data: ModCreate):
-    return await mods_repo.create_mod(session, mod_data)
+async def create_mod(
+    session: SessionDep,
+    title: str = Form(...),
+    description: str = Form(...),
+    version_id: int = Form(...),
+    category_id: int = Form(...),
+    file: UploadFile = File(...)
+):
+    mod_data = ModCreate(
+        name=title,
+        description=description,
+        version_id=version_id,
+        category_id=category_id
+    )
+
+    mod = await mods_repo.create_mod(session, mod_data)
+    mod_file_path = mod_files_dir / str(mod.id) / mod_data.version_id
+
+    async with aiofiles.open(mod_file_path, "wb") as f:
+        content = await file.read()
+        await f.write(content)
+    return mod
 
 
 @router.get("/", response_model=ModsOut)
@@ -49,3 +75,24 @@ async def delete_mod_by_id(session: SessionDep, mod_id: int):
     if not ok:
         raise HTTPException(status_code=404, detail="Mod not found")
     return { "status": "deleted" }
+
+
+@router.get("/{mod_id}/download")
+async def download_mod_by_id(
+    session: SessionDep,
+    mod_id: int,
+    version: str = Query(description="Версия майнкрафт"),
+):
+    mod = await mods_repo.get_mod_by_id(session, mod_id)
+    if mod is None:
+        raise HTTPException(status_code=404, detail="Mod not found")
+
+    mod_file_path = mod_files_dir / str(mod_id) / version
+
+    if not mod_file_path.is_file():
+        raise HTTPException(status_code=500, detail="Server error")
+
+    return FileResponse(
+        path=mod_file_path,
+        filename=f"{mod.name}_{version}",
+    )

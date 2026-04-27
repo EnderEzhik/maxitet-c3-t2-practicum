@@ -1,5 +1,3 @@
-const API_BASE = "http://localhost:8000";
-
 const modCardsContainer = document.getElementById("cardsContainer");
 const totalCount = document.getElementById("totalCount");
 const filtersForm = document.getElementById("filtersForm");
@@ -132,7 +130,7 @@ function openModDetails(mod) {
     for (const version of versions) {
         const link = document.createElement("a");
         link.className = "mod-download-link";
-        link.href = `${API_BASE}/mods/${mod.id}/download?version_id=${version.id}`;
+        link.href = `/mods/${mod.id}/download?version_id=${version.id}`;
         link.textContent = `Скачать для Minecraft ${version.version}`;
         modDetailsDownloads.appendChild(link);
     }
@@ -226,7 +224,7 @@ function setPage(nextPage) {
 async function fetchMods(filters = { title: "", versionId: "", categories: [] }) {
     try {
         const queryString = buildModsQueryString(filters);
-        const url = queryString ? `${API_BASE}/mods?${queryString}` : `${API_BASE}/mods`;
+        const url = queryString ? `/mods?${queryString}` : `/mods`;
         const response = await fetch(url, {
             method: "GET"
         });
@@ -255,7 +253,7 @@ async function fetchMods(filters = { title: "", versionId: "", categories: [] })
 
 async function fetchVersions() {
     try {
-        const response = await fetch(`${API_BASE}/versions`, { method: "GET" });
+        const response = await fetch(`/versions`, { method: "GET" });
 
         if (!response.ok) {
             console.error(response.status);
@@ -280,7 +278,7 @@ async function fetchVersions() {
 
 async function fetchCategories() {
     try {
-        const response = await fetch(`${API_BASE}/categories`, { method: "GET" });
+        const response = await fetch(`/categories`, { method: "GET" });
 
         if (!response.ok) {
             console.error(response.status);
