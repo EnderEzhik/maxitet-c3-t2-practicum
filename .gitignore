@@ -1,0 +1,6 @@
+__pycache__
+.vscode
+
+*.db
+Опись.md
+mod_files

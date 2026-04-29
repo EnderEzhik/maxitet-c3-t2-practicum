@@ -1,7 +1,6 @@
 body {
     margin: 0;
     padding: 0;
-    /* min-height: 100vh; */
     background-color: #0d1b2a;
     color: #e0e1dd;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -183,7 +182,7 @@ body {
     margin-top: 1.25rem;
     margin-bottom: 1.25rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem;
 }
 
@@ -372,23 +371,38 @@ body {
     font-size: 0.9rem;
 }
 
-/* Адаптивность */
-/* @media (max-width: 992px) {
-    .layout {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        flex: 1 1 auto;
-    }
+.additional-buttons {
+    flex: 0 0 50px;
+    align-content: center;
+    text-align: center;
 }
 
-@media (max-width: 576px) {
-    .header {
-        padding-inline: 1rem;
-    }
+[upload-mod-tooltip] {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dashed #007bff;
+}
 
-    .content {
-        padding: 1.25rem 1rem;
-    }
-} */
+[upload-mod-tooltip]:before {
+  content: attr(upload-mod-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: #007bff;
+  color: white;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 14px;
+  visibility: hidden;
+  opacity: 0;
+  transition: 0.2s;
+  pointer-events: none;
+  z-index: 100;
+}
+
+[upload-mod-tooltip]:hover:before {
+  visibility: visible;
+  opacity: 1;
+}

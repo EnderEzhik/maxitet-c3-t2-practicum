@@ -27,8 +27,8 @@ class Mod(SQLModel, table=True):
 class ModCreate(SQLModel):
     name: str = Field(min_length=1, max_length=255)
     description: str = Field(min_length=1, max_length=2000)
-    version_id: int = Field(...)
-    category_id: int = Field(...)
+    version: str = Field(...)
+    categories: List[str] = Field(min_length=1)
 
 
 class ModOut(SQLModel):

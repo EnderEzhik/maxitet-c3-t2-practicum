@@ -33,6 +33,10 @@ async def get_version(session: AsyncSession, version_id: int) -> Version | None:
     return await session.get(Version, version_id)
 
 
+async def get_version_by_number(session: AsyncSession, version_number: str) -> Version | None:
+    return (await session.exec(select(Version).where(Version.version == version_number))).one_or_none()
+
+
 async def delete_version(session: AsyncSession, version_id: int) -> bool:
     version = await get_version(session, version_id)
     if version is None:

@@ -13,9 +13,38 @@ const modDetailsDescription = document.getElementById("modDetailsDescription");
 const modDetailsDownloads = document.getElementById("modDetailsDownloads");
 const modDetailsModal = window.bootstrap ? new window.bootstrap.Modal(modDetailsModalElement) : null;
 
+const modUploadModalElement = document.getElementById("modUploadModal");
+const modUploadModal = window.bootstrap ? new window.bootstrap.Modal(modUploadModalElement) : null;
+
+const modUploadTitle = document.getElementById("modUploadTitle");
+
+const modUploadNameSection = document.getElementById("modUploadNameSection");
+const modUploadDescriptionSection = document.getElementById("modUploadDescriptionSection");
+const modUploadCategoriesSection = document.getElementById("modUploadCategoriesSection");
+
+const modUploadNameInput = document.getElementById("modUploadNameInput");
+const modUploadDescriptionInput = document.getElementById("modUploadDescriptionInput");
+const modUploadVersionSelect = document.getElementById("modUploadVersionSelect");
+const modUploadCategoryCheckboxes = document.getElementById("modUploadCategoryCheckboxes");
+const modUploadFileInput = document.getElementById("modUploadFileInput");
+const modUploadError = document.getElementById("modUploadError");
+const modUploadSubmitBtn = document.getElementById("modUploadSubmitBtn");
+
+const openModUploadFromDetailsBtn = document.getElementById("openModUploadFromDetailsBtn");
+const openUploadCreateBtn = document.querySelector('button[upload-mod-tooltip="Загрузить мод"]');
+
 const MODS_PER_PAGE = 9;
 let allMods = [];
 let currentPage = 1;
+
+let modUploadMode = /** @type {"create"|"upload"|null} */ (null);
+let modUploadTargetModId = null;
+let lastOpenedModId = null;
+
+/** @type {Array<{id:number, version:string}>} */
+let versionsCache = [];
+/** @type {Array<{id:number, category:string}>} */
+let categoriesCache = [];
 
 function escapeHtml(text) {
     const div = document.createElement("div");
@@ -115,6 +144,10 @@ function openModDetails(mod) {
 
     modDetailsTitle.textContent = mod.name;
     modDetailsDescription.textContent = mod.description;
+    lastOpenedModId = mod.id;
+    if (openModUploadFromDetailsBtn) {
+        openModUploadFromDetailsBtn.dataset.modId = String(mod.id);
+    }
     modDetailsDownloads.replaceChildren();
 
     const versions = Array.isArray(mod.versions) ? sortVersionsDesc(mod.versions) : [];
@@ -130,12 +163,181 @@ function openModDetails(mod) {
     for (const version of versions) {
         const link = document.createElement("a");
         link.className = "mod-download-link";
-        link.href = `/mods/${mod.id}/download?version_id=${version.id}`;
+        link.href = `/mods/${mod.id}/download?version=${version.version}`;
         link.textContent = `Скачать для Minecraft ${version.version}`;
         modDetailsDownloads.appendChild(link);
     }
 
     modDetailsModal.show();
+}
+
+function resetModUploadForm() {
+    modUploadError.textContent = "";
+
+    modUploadNameInput.value = "";
+    modUploadDescriptionInput.value = "";
+
+    modUploadVersionSelect.value = "";
+    modUploadFileInput.value = "";
+
+    for (const checkbox of modUploadCategoryCheckboxes.querySelectorAll("input[name='categories']")) {
+        checkbox.checked = false;
+    }
+}
+
+function openModUploadForCreateMode() {
+    if (!modUploadModal) {
+        return;
+    }
+
+    modUploadMode = "create";
+    modUploadTargetModId = null;
+
+    modUploadTitle.textContent = "Публикация мода";
+    modUploadSubmitBtn.textContent = "Опубликовать";
+
+    if (modUploadNameSection) modUploadNameSection.style.display = "";
+    if (modUploadDescriptionSection) modUploadDescriptionSection.style.display = "";
+    if (modUploadCategoriesSection) modUploadCategoriesSection.style.display = "";
+
+    resetModUploadForm();
+
+    // В режиме создания все версии доступны
+    for (const opt of modUploadVersionSelect.options) {
+        opt.disabled = false;
+    }
+
+    modUploadModal.show();
+}
+
+/**
+ * @param {{ id:number, versions?: Array<{version:string}> }} mod
+ */
+function openModUploadForUploadMode(mod) {
+    if (!modUploadModal) {
+        return;
+    }
+
+    modUploadMode = "upload";
+    modUploadTargetModId = mod.id;
+
+    modUploadTitle.textContent = "Добавление версии мода";
+    modUploadSubmitBtn.textContent = "Загрузить";
+
+    if (modUploadNameSection) modUploadNameSection.style.display = "none";
+    if (modUploadDescriptionSection) modUploadDescriptionSection.style.display = "none";
+    if (modUploadCategoriesSection) modUploadCategoriesSection.style.display = "none";
+
+    resetModUploadForm();
+
+    const existingVersions = new Set(Array.isArray(mod.versions) ? mod.versions.map((v) => v.version) : []);
+    for (const opt of modUploadVersionSelect.options) {
+        if (!opt.value) continue;
+        opt.disabled = existingVersions.has(opt.value);
+    }
+
+    // Подбираем первую активную версию, если выбранная отключена/не выбрана
+    if (!modUploadVersionSelect.value) {
+        const firstEnabled = Array.from(modUploadVersionSelect.options).find((o) => o.value && !o.disabled);
+        if (firstEnabled) modUploadVersionSelect.value = firstEnabled.value;
+    } else {
+        const selectedOpt = modUploadVersionSelect.selectedOptions[0];
+        if (selectedOpt && selectedOpt.disabled) {
+            const firstEnabled = Array.from(modUploadVersionSelect.options).find((o) => o.value && !o.disabled);
+            if (firstEnabled) modUploadVersionSelect.value = firstEnabled.value;
+        }
+    }
+
+    modUploadModal.show();
+}
+
+async function submitModUpload() {
+    const file = modUploadFileInput.files?.[0];
+    const selectedVersion = modUploadVersionSelect.value;
+
+    if (!selectedVersion) {
+        modUploadError.textContent = "Выберите версию Minecraft.";
+        return;
+    }
+
+    if (!file) {
+        modUploadError.textContent = "Выберите файл .jar.";
+        return;
+    }
+
+    try {
+        if (modUploadMode === "create") {
+            const name = modUploadNameInput.value.trim();
+            const description = modUploadDescriptionInput.value.trim();
+            const selectedCategories = Array.from(
+                modUploadCategoryCheckboxes.querySelectorAll("input[name='categories']:checked"),
+                (checkbox) => checkbox.value
+            );
+
+            if (!name) {
+                modUploadError.textContent = "Название мода обязательно.";
+                return;
+            }
+            if (!description) {
+                modUploadError.textContent = "Описание мода обязательно.";
+                return;
+            }
+            if (selectedCategories.length === 0) {
+                modUploadError.textContent = "Выберите хотя бы одну категорию.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("description", description);
+            formData.append("version", selectedVersion);
+            for (const category of selectedCategories) {
+                formData.append("categories", category);
+            }
+            formData.append("mod_file", file);
+
+            const response = await fetch("/mods", { method: "POST", body: formData });
+            if (!response.ok) {
+                const err = await response.json().catch(() => null);
+                throw new Error(err?.detail ? String(err.detail) : `HTTP ${response.status}`);
+            }
+
+            const createdMod = await response.json();
+            lastOpenedModId = createdMod.id;
+            modUploadModal.hide();
+            await fetchMods(getFiltersState());
+            const refreshedMod = allMods.find((m) => m.id === createdMod.id);
+            openModDetails(refreshedMod || createdMod);
+            return;
+        }
+
+        if (modUploadMode === "upload") {
+            if (!modUploadTargetModId) {
+                throw new Error("Не задан mod_id для загрузки версии.");
+            }
+
+            const formData = new FormData();
+            formData.append("mod_file", file);
+
+            const url = `/mods/${modUploadTargetModId}/upload-file?version_number=${encodeURIComponent(selectedVersion)}`;
+            const response = await fetch(url, { method: "POST", body: formData });
+            if (!response.ok) {
+                const err = await response.json().catch(() => null);
+                throw new Error(err?.detail ? String(err.detail) : `HTTP ${response.status}`);
+            }
+
+            modUploadModal.hide();
+            await fetchMods(getFiltersState());
+
+            const refreshedMod = allMods.find((m) => m.id === modUploadTargetModId);
+            if (refreshedMod) {
+                openModDetails(refreshedMod);
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        modUploadError.textContent = error instanceof Error ? error.message : "Ошибка загрузки мода.";
+    }
 }
 
 /**
@@ -263,13 +465,34 @@ async function fetchVersions() {
         }
 
         const data = await response.json();
-        const versions = sortVersionsDesc(data.data);
+        versionsCache = sortVersionsDesc(data.data);
 
-        for (const v of versions) {
+        // Фильтры (value = version.id)
+        versionSelect.replaceChildren();
+        const anyOpt = document.createElement("option");
+        anyOpt.value = "";
+        anyOpt.textContent = "Любая";
+        versionSelect.appendChild(anyOpt);
+
+        for (const v of versionsCache) {
             const opt = document.createElement("option");
             opt.value = String(v.id);
             opt.textContent = v.version;
             versionSelect.appendChild(opt);
+        }
+
+        // Модал (value = version.version)
+        modUploadVersionSelect.replaceChildren();
+        const modalDefaultOpt = document.createElement("option");
+        modalDefaultOpt.value = "";
+        modalDefaultOpt.textContent = "Выберите версию";
+        modUploadVersionSelect.appendChild(modalDefaultOpt);
+
+        for (const v of versionsCache) {
+            const opt = document.createElement("option");
+            opt.value = v.version;
+            opt.textContent = v.version;
+            modUploadVersionSelect.appendChild(opt);
         }
     } catch (error) {
         console.error(error);
@@ -288,11 +511,11 @@ async function fetchCategories() {
         }
 
         const data = await response.json();
-        const categories = data.data;
+        categoriesCache = data.data;
 
+        // Фильтры (чекбоксы в сайдбаре)
         categoryCheckboxesContainer.replaceChildren();
-
-        for (const c of categories) {
+        for (const c of categoriesCache) {
             const label = document.createElement("label");
             label.className = "form-check";
 
@@ -304,8 +527,24 @@ async function fetchCategories() {
 
             label.appendChild(input);
             label.appendChild(document.createTextNode(c.category));
-
             categoryCheckboxesContainer.appendChild(label);
+        }
+
+        // Модал (чекбоксы выбора категорий)
+        modUploadCategoryCheckboxes.replaceChildren();
+        for (const c of categoriesCache) {
+            const label = document.createElement("label");
+            label.className = "form-check";
+
+            const input = document.createElement("input");
+            input.type = "checkbox";
+            input.className = "form-check-input";
+            input.name = "categories";
+            input.value = c.category;
+
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(c.category));
+            modUploadCategoryCheckboxes.appendChild(label);
         }
     } catch (error) {
         console.error(error);
@@ -346,5 +585,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         setTimeout(async () => {
             await fetchMods();
         }, 0);
+    });
+
+    if (openUploadCreateBtn) {
+        openUploadCreateBtn.addEventListener("click", () => {
+            openModUploadForCreateMode();
+        });
+    }
+
+    if (openModUploadFromDetailsBtn) {
+        openModUploadFromDetailsBtn.addEventListener("click", () => {
+            const modId = Number(openModUploadFromDetailsBtn.dataset.modId || lastOpenedModId);
+            const mod = allMods.find((m) => m.id === modId);
+            if (!mod) {
+                return;
+            }
+            openModUploadForUploadMode(mod);
+        });
+    }
+
+    modUploadSubmitBtn?.addEventListener("click", () => {
+        submitModUpload();
     });
 });

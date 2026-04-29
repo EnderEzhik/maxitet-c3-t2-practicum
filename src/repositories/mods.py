@@ -15,28 +15,20 @@ async def create_mod(session: AsyncSession, mod_data: ModCreate) -> Mod:
     if mod_exists is not None:
         raise HTTPException(status_code=409, detail=f"Mod with name \"{mod_data.name}\" already exists")
 
-    mod = Mod(**mod_data.model_dump(exclude={"version_ids"}))
+    version = (await session.exec(select(Version).where(Version.version == mod_data.version))).one_or_none()
+    if version is None:
+        raise HTTPException(status_code=404, detail="Version not found")
 
-    versions_stmt = select(Version).where(Version.id.in_(mod_data.version_ids))
-    versions_result = await session.exec(versions_stmt)
-    versions = list(versions_result.all())
-    if len(versions) != len(mod_data.version_ids):
-        raise HTTPException(
-            status_code=404,
-            detail="One or more Minecraft versions not found"
-        )
 
-    mod.versions = versions
+    unique_categories = list(dict.fromkeys(mod_data.categories))
+    categories = (
+        await session.exec(select(Category).where(Category.category.in_(unique_categories)))
+    ).all()
+    if len(categories) != len(unique_categories):
+        raise HTTPException(status_code=404, detail="One or more categories not found")
 
-    categories_stmt = select(Category).where(Category.id.in_(mod_data.category_ids))
-    categories_result = await session.exec(categories_stmt)
-    categories = list(categories_result.all())
-    if len(categories) != len(mod_data.category_ids):
-        raise HTTPException(
-            status_code=404,
-            detail="One or more categories not found"
-        )
-
+    mod = Mod(**mod_data.model_dump(exclude={"version", "categories"}))
+    mod.versions = [version]
     mod.categories = categories
 
     session.add(mod)
